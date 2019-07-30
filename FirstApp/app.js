@@ -1,6 +1,9 @@
+const log = require('./logger');
+//console.log(logger);
+log('message');
 
-function sayHello(name){
-    console.log('Hello '+name);
-}
+const fs = require('fs');
 
-sayHello('Akshay Gupta')
+const files =fs.readdirSync('./');
+
+console.log(files);
