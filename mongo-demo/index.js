@@ -23,11 +23,12 @@ const courseSchema = new mongoose.Schema({
             validator: function(v,callback){
                 setTimeout(()=>{
                    //do some async work 
-                   const result= returnv && v.length >0;
+                   const result= v && v.length >0;
                    callback(result);
                 },1000)
             },
             message:'A course should have atleast one tag'
+        }
         }
     },
     date:{type: Date, default: Date.now},
@@ -61,7 +62,8 @@ const result = await course.save();
 console.log(result);
 }
 catch(ex){
-    console.log(ex.message);
+    for(field in ex.errors)
+    console.log(ex.errors[field].message); //displaying all the validate errors
 }
 }
 
