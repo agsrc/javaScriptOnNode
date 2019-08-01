@@ -28,4 +28,23 @@ const result = await course.save();
 console.log(result);
 }
 
-createCourse();
+async function getCourses(){
+// /api/courses?pageNumber=2&pageSize=10
+    const pageNumber =2;
+    const pageSize=10;
+    //eq(equal)
+    //ne (not equal)
+    //nin(not in)
+
+    const courses = await Course
+    //.find({author: 'Mosh',isPublished:true}) with filters returns promise -- document query object though
+    //.find({price:{$gt:10, $lte:20}}) // replace value with objwct
+    .find({price: {$in:[10,15,20]}})
+    .skip((pageNumber-1)*pageSize)
+    .limit(pageSize)
+    .sort({name:1})
+    .select({name:1, tags:1});
+    console.log(courses);
+};
+getCourses();
+
