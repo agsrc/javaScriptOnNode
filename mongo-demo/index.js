@@ -6,29 +6,66 @@ mongoose.connect('mongodb://localhost/playground') // playground is the database
 
 
 const courseSchema = new mongoose.Schema({
-    name: String, 
+    name: {
+        type: String,
+         required:true,
+        minlength: 5,
+        maxlength:255},
+        category:{
+            type:String,
+            enum:['web','mobile','network']
+        }, 
     author: String,
-    tags:[String],
+    tags:{
+        type:Array,
+        validate:{
+            isAsync: true,
+            validator: function(v,callback){
+                setTimeout(()=>{
+                   //do some async work 
+                   const result= returnv && v.length >0;
+                   callback(result);
+                },1000)
+            },
+            message:'A course should have atleast one tag'
+        }
+    },
     date:{type: Date, default: Date.now},
-    isPublished: Boolean
+    isPublished: Boolean,
+    price: {
+        type: Number,
+        required: function(){ return this.isPublished;},
+        min:10,
+        max:200
+    }
 });
 
 const Course = mongoose.model('Course',courseSchema); //pascal case for classes
 
 async function createCourse(){
 const course =  new Course({
-    name: 'Angular Course',
+   // name: 'Angular Course',
+   category: '-',
     author:'Mosh',
     tags: ['angular', 'frontend'], //schemaless property would take care
-    isPublished: true
+    isPublished: true,
+   // price: 15
 });
 
-
+try{
+    //  course.validate((err)=>{ // design flaw because it returns void
+    //      if(err){}
+    //  });
+    
 const result = await course.save(); 
 console.log(result);
 }
+catch(ex){
+    console.log(ex.message);
+}
+}
 
-async function getCourses(){
+async function getCourse(){
 // /api/courses?pageNumber=2&pageSize=10
     const pageNumber =2;
     const pageSize=10;
@@ -46,5 +83,5 @@ async function getCourses(){
     .select({name:1, tags:1});
     console.log(courses);
 };
-getCourses();
+createCourse();
 
